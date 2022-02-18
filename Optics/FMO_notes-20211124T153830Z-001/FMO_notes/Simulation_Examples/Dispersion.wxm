@@ -1,0 +1,166 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 15.08.1+git ] */
+
+/* [wxMaxima: title   start ]
+Dispersion
+   [wxMaxima: title   end   ] */
+
+/* [wxMaxima: section start ]
+Description/Licence
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: fold    start ] */
+
+/* [wxMaxima: input   start ] */
+/* ========================================== */ 
+/*          Dispersion examples               */
+/*                                            */
+/*          Dimitris Papazoglou 2016          */
+/* Materials Sience and Technology Department */
+/* Optics and Vision interdiciplinary MSc     */
+/* ========================================== */
+/* This software is distributed under the     */
+/*       GNU GENERAL PUBLIC LICENSE           */ 
+/* http://www.gnu.org/licenses/gpl-3.0.html   */
+/* ========================================== */
+
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Dispersion examples for bounded electrons 
+using the Lorenz phenomenologial model
+and single species
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: fold    end   ] */
+
+/* [wxMaxima: section start ]
+Function Definitions
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: input   start ] */
+kill(all)$
+
+Ef[t,w]:=exp(%i*w*t)$
+P0[w,w0,g]:=(1/(w0^2-w^2-%i*g))$
+P[t,w,w0,g,c]:=c*P0[w,w0,g]*Ef[t,w]$
+n[w,w0,g,c]:=sqrt(1+c*P0[w,w0,g])$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: section start ]
+Examples
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: subsect start ]
+Electric polarization
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: input   start ] */
+gamma:0.1$
+wxplot2d(
+    [realpart(P0[w,1,gamma]),imagpart(P0[w,1,0.1])],
+    [w,0.8,1.2],
+    [title,concat("Electric Polarization for {/Symbol g} =",gamma)],
+    [legend,"Re[P]","Im[P]"],
+    [style,[lines,4,1],[lines,4,2]],
+    [xlabel,"{/Symbol w/w_0}"]
+    );
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+gamma:0.5$
+w1:1.0$
+wxplot2d(
+    [realpart(P[t,w1,1,gamma,1]),realpart(Ef[t,w1])],
+    [t,-2*%pi/w1,2*%pi/w1],
+    [y,-10,10],
+    [title,concat("Electric Polarization for {/Symbol g} =",gamma,", {/Symbol w/w_o}=",w1)],
+    [legend,"P","E"],
+    [style,[lines,4,1],[lines,4,2]],
+    [xlabel,"t/{/Symbol T_o}"]
+    );
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsubsect start ]
+Animation
+   [wxMaxima: subsubsect end   ] */
+
+/* [wxMaxima: input   start ] */
+gamma:0.1$
+scanrange:[0.8,1.2,0.05]$
+scan:append(makelist(di,di,scanrange[1],scanrange[2],scanrange[3]),makelist(di,di,scanrange[2],scanrange[1],-scanrange[3]))$
+with_slider_draw(
+    dw,scan,
+    title=concat("{/Symbol w/w_o} = ",round(100*dw)/100.0),
+    yrange=[-10,10],
+    color="blue",
+    key="P",
+    line_width=4,
+    xlabel="t/{/Symbol T_o}",
+    explicit(
+     ''realpart(P[t,dw,1,gamma,1]),
+     t,-2*%pi/dw,2*%pi/dw    
+    ),
+   color="red",
+   key="E",
+   explicit(
+      ''realpart(Ef[t,dw]),
+      t,-2*%pi/dw,2*%pi/dw  
+    ),
+    grid=true
+);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsect start ]
+Refractive index
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: input   start ] */
+gamma:0.1$
+wxplot2d(
+    [1,realpart(n[w,1,gamma,0.1]),imagpart(n[w,1,gamma,0.1])],
+    [w,0,2],
+    [style,[lines,1.5,5],[lines,4,1],[lines,4,2]],
+    [title,concat("refractive index for {/Symbol g} =",gamma)],
+    [legend,"","n","{/Symbol k} "],
+    [xlabel,"{/Symbol w/w_0}"]
+);
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsubsect start ]
+Animation
+   [wxMaxima: subsubsect end   ] */
+
+/* [wxMaxima: input   start ] */
+couplingF:0.05$
+scanrange:[0.01,0.1,0.01]$
+scan:append(makelist(di,di,scanrange[1],scanrange[2],scanrange[3]),makelist(di,di,scanrange[2],scanrange[1],-scanrange[3]))$
+with_slider_draw(
+    dg,scan,
+    title=concat("{/Symbol g} = ",round(100*dg)/100.0),
+    yrange=[0,2],
+    color="blue",
+    key="n",
+    line_width=4,
+    xlabel="t/{/Symbol w/w_o}",
+    ylabel="n",
+    explicit(
+     realpart(n[w,1,dg,couplingF]),
+    w,0.5,1.5    
+    ),
+   color="red",
+   key="{/Symbol k}",
+   yrange_secondary = [0,3],
+   yaxis_secondary = true,
+   ytics_secondary = true,
+   ylabel_secondary="{/Symbol k}",
+   explicit(
+      imagpart(n[w,1,dg,couplingF]),
+ w,0.5,1.5  
+    ),
+    grid=true
+);
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$

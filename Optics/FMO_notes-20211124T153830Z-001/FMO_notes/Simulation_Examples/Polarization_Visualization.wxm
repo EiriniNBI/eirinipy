@@ -1,0 +1,373 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 15.08.2 ] */
+
+/* [wxMaxima: title   start ]
+Polarization Visualisation
+   [wxMaxima: title   end   ] */
+
+/* [wxMaxima: section start ]
+Description/Licence
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: fold    start ] */
+
+/* [wxMaxima: input   start ] */
+/* ========================================== */ 
+/*          Dimitris Papazoglou 2016          */
+/* Materials Sience and Technology Department */
+/* Optics and Vision interdiciplinary MSc     */
+/* ========================================== */
+/* This software is distributed under the     */
+/*       GNU GENERAL PUBLIC LICENSE           */ 
+/* http://www.gnu.org/licenses/gpl-3.0.html   */
+/* ========================================== */
+
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Visualization of the phase and group velocity in wave packets
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: fold    end   ] */
+
+/* [wxMaxima: section start ]
+Function definitions
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: fold    start ] */
+
+/* [wxMaxima: input   start ] */
+/* set draw defaults */
+set_draw_defaults(
+         axis_bottom = false,
+         axis_top = false,
+         axis_right = false,
+         axis_left = false,
+         xtics=false,
+         ytics=false
+        )$
+
+
+
+Animate_Polarization(Ex0,Ey0,dph):=block(
+
+    dnorm:sqrt(Ex0^2+Ey0^2),
+    Ex0:Ex0/dnorm,
+    Ey0:Ey0/dnorm,
+
+    with_slider_draw(
+        dt,makelist(di,di,0,2*%pi,%pi/10.0),
+
+
+        proportional_axes=xy,
+
+        color = "gray",
+        line_width=3,
+        head_length = 0.02,
+        line_type = solid,
+        label(["x",1.1,-0.1]),
+        vector([-1.1,0],[2.2,0]),
+        label(["y",-0.1,1.1]),
+        vector([0,-1.1],[0,2.2]),
+
+        line_width=3,
+        line_type = dots,
+        nticks=100,
+        color="#808080",
+
+        parametric(
+          Ex0*cos(theta),Ey0*cos(-theta+dph),
+            theta,0,2*%pi
+        ),
+
+        point_type=circle,
+        point_size=2,
+        points([[0,0]]),
+
+
+        line_width=3,
+        line_type = dots,
+        color="green",
+        polygon([[Ex0*cos(-dt),0],[Ex0*cos(-dt),Ey0*cos(-dt+dph)]]),
+
+        line_width=3,
+        line_type = dots,
+        color="green",
+        polygon([[0,Ey0*cos(-dt+dph)],[Ex0*cos(-dt),Ey0*cos(-dt+dph)]]),
+
+
+
+        color = "black",
+        line_width=3,
+        head_length = 0.03,
+        line_type = solid,
+        vector([0,0],[Ex0*cos(-dt),0]),
+
+        color = "black",
+        line_width=3,
+        head_length = 0.03,
+        line_type = solid,
+        vector([0,0],[0,Ey0*cos(-dt+dph)]),
+
+        color = "red",
+        line_width=4,
+        head_length = 0.03,
+        line_type = solid,
+        vector([0,0],[Ex0*cos(-dt),Ey0*cos(-dt+dph)])
+
+    )
+)$;
+
+
+Mix_Polarization(P1,P2,Dphi):=block(
+
+    dnorm:sqrt(P1.conjugate(P1)+P2.conjugate(P2)),
+    Amp1:cabs(P1/dnorm),
+    Amp2:cabs(P2/dnorm),
+    ph1:carg(P1),
+    ph2:carg(P2),
+
+    with_slider_draw(
+        dt,makelist(di,di,0,2*%pi,%pi/10.0),
+
+
+        proportional_axes=xy,
+
+        color = "gray",
+        line_width=3,
+        head_length = 0.02,
+       line_type = solid,
+        label(["x",1.1,-0.1]),
+        vector([-1.1,0],[2.2,0]),
+        label(["y",-0.1,1.1]),
+        vector([0,-1.1],[0,2.2]),
+
+        line_width=2,
+        line_type = dots,
+        nticks=100,
+        color="#800000",
+
+        parametric(
+          Amp1[1]*cos(-theta+ph1[1])+Amp2[1]*cos(-theta+ph2[1]+Dphi),
+                Amp1[2]*cos(-theta+ph1[2])+Amp2[2]*cos(-theta+ph2[2]+Dphi),
+            theta,0,2*%pi
+        ),
+
+        line_width=3,
+        line_type = dots,
+        nticks=100,
+        color="#A0A0A0",
+
+        parametric(
+          Amp1[1]*cos(-theta+ph1[1]),Amp1[2]*cos(-theta+ph1[2]),
+            theta,0,2*%pi
+        ),
+
+
+        line_width=2,
+        line_type = dots,
+        nticks=100,
+        color="#000080",
+
+        parametric(
+          Amp2[1]*cos(-theta+ph2[1]+Dphi),Amp2[2]*cos(-theta+ph2[2]+Dphi),
+            theta,0,2*%pi
+        ),
+
+
+
+        point_type=circle,
+        point_size=2,
+        points([[0,0]]),
+
+
+        line_width=3,
+        line_type = dots,
+        color="gray",
+        polygon([
+                [Amp1[1]*cos(-dt+ph1[1]),Amp1[2]*cos(-dt+ph1[2])],
+                [Amp1[1]*cos(-dt+ph1[1])+Amp2[1]*cos(-dt+ph2[1]+Dphi),
+          Amp1[2]*cos(-dt+ph1[2])+Amp2[2]*cos(-dt+ph2[2]+Dphi)]
+            ]),
+
+
+        line_width=3,
+        line_type = dots,
+        color="gray",
+        polygon([
+                [Amp2[1]*cos(-dt+ph2[1]+Dphi),Amp2[2]*cos(-dt+ph2[2]+Dphi)],
+                [Amp1[1]*cos(-dt+ph1[1])+Amp2[1]*cos(-dt+ph2[1]+Dphi),
+                Amp1[2]*cos(-dt+ph1[2])+Amp2[2]*cos(-dt+ph2[2]+Dphi)]
+            ]),
+
+
+        color = "black",
+        line_width=3,
+        head_length = 0.03,
+        line_type = solid,
+        vector([0,0],[Amp1[1]*cos(-dt+ph1[1]),Amp1[2]*cos(-dt+ph1[2])]),
+
+        color = "blue",
+        line_width=3,
+        head_length = 0.03,
+        line_type = solid,
+        vector([0,0],[Amp2[1]*cos(-dt+ph2[1]+Dphi),Amp2[2]*cos(-dt+ph2[2]+Dphi)]),
+
+        color = "red",
+        line_width=4,
+        head_length = 0.03,
+        line_type = solid,
+        vector([0,0],
+            [Amp1[1]*cos(-dt+ph1[1])+Amp2[1]*cos(-dt+ph2[1]+Dphi),
+                Amp1[2]*cos(-dt+ph1[2])+Amp2[2]*cos(-dt+ph2[2]+Dphi)])
+
+    )
+
+
+)$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: fold    end   ] */
+
+/* [wxMaxima: section start ]
+Visualization 
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: subsect start ]
+Function description
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+Animate_Polarization(Ex0,Ey0,Δφ)
+
+Visualize the superposition of two orthogonal linear polarization states Ex, Ey
+                Ex+Ey*exp(%i*Δφ) =     [Ex0, Ey0*exp(%i*Δφ)]
+
+    Ex0 is the x component amplitude
+    Ey0 is the y component amplitude
+    Δφ is the phase retardance of the y component
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: comment start ]
+Mix_Polarization(P1,P2,Δφ) 
+
+Visualize the superposition of two polarization states
+
+                    P1+P2*exp(%i*Δφ)
+
+    P1 is the polarization of wave 1 
+    P2 is the polarization of wave 2
+    Δφ is the phase retardance of the P2 polarization
+        In both cases polarization is described as 
+        [Ex,Ey], where Ex,Ey are the x and y components i.e. 
+        Linearly polarized light parallel to the x axis    [1,  0]
+        RCPL    [1, -%i]
+        LCPL    [1, +%i]
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: subsect start ]
+Abbreviations
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+    LP                   Linearly polarized light
+
+    CPL                Circularly polarized light
+
+    RCPL             Right handed Circularly Polarized Light
+
+    LCPL              Left handed Circularly Polarized Light
+
+    EPL                Ellipticaly polarized light
+
+    REPL             Right handed ellipticaly polarized light
+
+    LEPL             Right handed ellipticaly polarized light
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: subsect start ]
+Linear polarization (LP)
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: comment start ]
+at 45 deg
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+Animate_Polarization(1,1,0),wxanimate_framerate=7;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+at angle θ (in degrees)
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+θ:20$
+deg2rad:%pi/180$
+Animate_Polarization(cos(θ*deg2rad),sin(θ*deg2rad),0),wxanimate_framerate=7;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsect start ]
+Circularly polarized light (CPL)
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: subsubsect start ]
+Right handed (RCPL)
+   [wxMaxima: subsubsect end   ] */
+
+/* [wxMaxima: input   start ] */
+Animate_Polarization(1,1,-%pi/2),wxanimate_framerate=7;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsubsect start ]
+Left handed (LCPL) 
+   [wxMaxima: subsubsect end   ] */
+
+/* [wxMaxima: input   start ] */
+Animate_Polarization(1,1,%pi/2),wxanimate_framerate=7;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsect start ]
+Polarization mix
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: subsubsect start ]
+LP + CPL
+   [wxMaxima: subsubsect end   ] */
+
+/* [wxMaxima: comment start ]
+Mixture of lineraly polarized light (at 45 deg to the x axis), with Left -Circularly Polarized light
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+Mix_Polarization([1,1],[1,%i],0),wxanimate_framerate=7;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsubsect start ]
+ RCPL +LCPL
+   [wxMaxima: subsubsect end   ] */
+
+/* [wxMaxima: comment start ]
+Mixture of Right and Left  Circularly Polarized light with a π phase difference
+
+R+L*exp(i*π)
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+Mix_Polarization([1,-%i],[1,%i],%pi),wxanimate_framerate=7;
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsubsect start ]
+ LP + LEPL
+   [wxMaxima: subsubsect end   ] */
+
+/* [wxMaxima: comment start ]
+Mixture of Linearly polarized and Left elliptically Polarized light  (ellipticity 0.5) with a π phase difference
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: input   start ] */
+Mix_Polarization([1,0],[2,%i],%pi),wxanimate_framerate=7;
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$

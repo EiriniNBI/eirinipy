@@ -1,0 +1,228 @@
+/* [wxMaxima batch file version 1] [ DO NOT EDIT BY HAND! ]*/
+/* [ Created with wxMaxima version 15.08.2 ] */
+
+/* [wxMaxima: title   start ]
+Fresnel equations examples
+   [wxMaxima: title   end   ] */
+
+/* [wxMaxima: section start ]
+Description/Licence
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: input   start ] */
+/* ========================================== */ 
+/*          Dimitris Papazoglou 2016          */
+/* Materials Sience and Technology Department */
+/* Optics and Vision interdiciplinary MSc     */
+/* ========================================== */
+/* This software is distributed under the     */
+/*       GNU GENERAL PUBLIC LICENSE           */ 
+/* http://www.gnu.org/licenses/gpl-3.0.html   */
+/* ========================================== */
+
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: comment start ]
+Using Fresnel equations to estimate reflectivity and transmisivity
+   [wxMaxima: comment end   ] */
+
+/* [wxMaxima: section start ]
+Function definitions
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: input   start ] */
+/* amplitude reflection/transmission coefficients*/
+
+/* S polarization (normal to the plane of incidence) */
+rs(theta_i,ni,nt):=(ni*cos(theta_i)-sqrt(nt^2-ni^2*sin(theta_i)^2))/(ni*cos(theta_i)+sqrt(nt^2-ni^2*sin(theta_i)^2))$
+ts(theta_i,ni,nt):=(2*ni*cos(theta_i))/(ni*cos(theta_i)+sqrt(nt^2-ni^2*sin(theta_i)^2))$
+
+/* P polarization (parallel to the plane of incidence) */
+rp(theta_i,ni,nt):=(nt^2*cos(theta_i)-ni*sqrt(nt^2-ni^2*sin(theta_i)^2))/(nt^2*cos(theta_i)+ni*sqrt(nt^2-ni^2*sin(theta_i)^2))$
+tp(theta_i,ni,nt):=(2*ni*nt*cos(theta_i))/(nt^2*cos(theta_i)+ni*sqrt(nt^2-ni^2*sin(theta_i)^2))$
+
+
+/* Reflectivity, Transmissivity */
+
+Rs(theta_i,ni,nt):=rs(theta_i,ni,nt)*conjugate(rs(theta_i,ni,nt))$
+Rp(theta_i,ni,nt):=rp(theta_i,ni,nt)*conjugate(rp(theta_i,ni,nt))$
+
+Ts(theta_i,ni,nt):=((nt*sqrt(1-(ni/nt)^2*sin(theta_i)^2))/(ni*cos(theta_i)))*ts(theta_i,ni,nt)*conjugate(ts(theta_i,ni,nt))$
+Tp(theta_i,ni,nt):=((nt*sqrt(1-(ni/nt)^2*sin(theta_i)^2))/(ni*cos(theta_i)))*tp(theta_i,ni,nt)*conjugate(tp(theta_i,ni,nt))$
+
+/* Critical angle*/
+ThetaC(ni,nt):=180*asin(nt/ni)/%pi$
+
+/* Brewster angle */
+ThetaB(ni,nt):=180*atan(nt/ni)/%pi$
+
+/* Jones Matrix for polarization */
+Refl(theta_i,ni,nt):=matrix([rs(theta_i,ni,nt),0],[0,rp(theta_i,ni,nt)])$
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: section start ]
+Examples
+   [wxMaxima: section end   ] */
+
+/* [wxMaxima: subsect start ]
+Amplitude 
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: subsubsect start ]
+nt>ni
+   [wxMaxima: subsubsect end   ] */
+
+/* [wxMaxima: input   start ] */
+ni_0:1.0$
+nt_0:1.5$
+
+wxplot2d(
+    [
+     rs(%pi*theta/180,ni_0,nt_0),
+     1,
+     rp(%pi*theta/180,ni_0,nt_0),
+     ts(%pi*theta/180,ni_0,nt_0),
+     tp(%pi*theta/180,ni_0,nt_0)           
+    ],
+    [theta,0,90],
+    [y,-1,1],
+    [legend,"{r_s}","", "{r_p}","{t_s}", "{t_p}"],
+    [title,concat("Reflectivity for {n_i}= ",string(ni_0),", {n_t}= ",string(nt_0))],
+    [style,[lines,4,2],[lines,1,5],[lines,4,1],[lines,4,5],[lines,4,3]],
+    [xlabel,"{/Symbol q} (deg)"],
+    [ylabel,"r"]
+    );
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+ni_0:1.0$
+nt_0:1.5$
+wxplot2d(
+    [
+     (carg(rs(%pi*theta/180,ni_0,nt_0))-carg(rp(%pi*theta/180,ni_0,nt_0)))/%pi
+    ],
+    [theta,0,90],
+    [y,0,1],
+    [legend,""],
+    [title,concat("{/Symbol Df}={/Symbol Df}_s-{/Symbol Df}_p for {n_i}= ",string(ni_0),", {n_t}= ",string(nt_0))],
+    [style,[lines,4,2],[lines,4,1],[lines,4,5],[lines,4,1]],
+    [xlabel,"{/Symbol q} (deg)"],
+    [ylabel,"{/Symbol Df/p}"]
+    );
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsubsect start ]
+ni>nt
+   [wxMaxima: subsubsect end   ] */
+
+/* [wxMaxima: input   start ] */
+ni_0:1.5$
+nt_0:1.0$
+wxplot2d(
+    [
+     cabs(rs(%pi*theta/180,ni_0,nt_0)),
+     cabs(rp(%pi*theta/180,ni_0,nt_0))
+    ],
+    [theta,0,90],
+    [y,0,1],
+    [legend,"{r_s}", "{r_p}"],
+    [title,concat("amplitude reflectivity for {n_i}= ",string(ni_0),", {n_t}= ",string(nt_0))],
+    [style,[lines,4,2],[lines,4,1],[lines,4,5],[lines,4,1]],
+    [xlabel,"{/Symbol q} (deg)"],
+    [ylabel,"|r|"]
+    );
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+ni_0:1.5$
+nt_0:1.0$
+wxplot2d(
+    [
+     (carg(rs(%pi*theta/180,ni_0,nt_0))-carg(rp(%pi*theta/180,ni_0,nt_0)))/%pi
+    ],
+    [theta,0,90],
+    [y,0,1],
+    [legend,""],
+    [title,concat("phase difference for {n_i}= ",string(ni_0),", {n_t}= ",string(nt_0))],
+    [style,[lines,4,2],[lines,4,1],[lines,4,5],[lines,4,1]],
+    [xlabel,"{/Symbol q} (deg)"],
+    [ylabel,"{/Symbol Df/p}"]
+    );
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: input   start ] */
+ni_0:3/2$
+nt_0:1$
+wxplot2d(
+    [
+     rs(%pi*theta/180,ni_0,nt_0),
+     1,
+     rp(%pi*theta/180,ni_0,nt_0)
+    ],
+    [theta,0,ThetaC(ni_0,nt_0)*0.999999],
+    [y,-1,1],
+    [legend,"{r_s}","", "{r_p}"],
+    [title,concat("Reflectivity for {n_i}= ",string(ni_0),", {n_t}= ",string(nt_0))],
+    [style,[lines,4,2],[lines,1,5],[lines,4,1]],
+    [xlabel,"{/Symbol q} (deg)"],
+    [ylabel,"r"]
+    );
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsect start ]
+Power
+   [wxMaxima: subsect end   ] */
+
+/* [wxMaxima: subsubsect start ]
+nt>ni
+   [wxMaxima: subsubsect end   ] */
+
+/* [wxMaxima: input   start ] */
+ni_0:1$
+nt_0:3/2$
+wxplot2d(
+    [
+     Rs(%pi*theta/180,ni_0,nt_0),
+     1,
+     Rp(%pi*theta/180,ni_0,nt_0),
+     Ts(%pi*theta/180,ni_0,nt_0),
+     Tp(%pi*theta/180,ni_0,nt_0)           
+    ],
+    [theta,0,90],
+    [x,0,115,30],
+    [xtics,0,30,90],
+    [y,-0.05,1.05],
+    [legend,"{R_s}", "","{R_p}","{t_s}", "{t_p}"],
+    [title,concat("Reflectivity for {n_i}= ",string(ni_0),", {n_t}= ",string(nt_0))],
+ [style,[lines,4,2],[lines,1,5],[lines,4,1],[lines,4,5],[lines,4,3]],
+    [xlabel,"{/Symbol q} (deg)"],
+    [ylabel,"R, T"]
+    );
+/* [wxMaxima: input   end   ] */
+
+/* [wxMaxima: subsubsect start ]
+ni>nt
+   [wxMaxima: subsubsect end   ] */
+
+/* [wxMaxima: input   start ] */
+ni_0:3/2$
+nt_0:1$
+wxplot2d(
+    [
+     Rs(%pi*theta/180,ni_0,nt_0),
+     Rp(%pi*theta/180,ni_0,nt_0)
+    ],
+    [theta,0,90],
+    [x,0,90],
+    [xtics,0,30,90],
+    [y,-0.05,1.2],
+    [legend,"{R_s}", "{R_p}"],
+    [title,concat("Reflectivity for {n_i}= ",string(ni_0),", {n_t}= ",string(nt_0))],
+    [style,[lines,4,2],[lines,4,1],[lines,4,5],[lines,4,3]],
+    [xlabel,"{/Symbol q} (deg)"],
+    [ylabel,"R"]
+    );
+/* [wxMaxima: input   end   ] */
+
+/* Maxima can't load/batch files which end with a comment! */
+"Created with wxMaxima"$
